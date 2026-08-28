@@ -24,6 +24,7 @@
     "test:apply": "bash scripts/test-apply-update.sh",
     "verify:phase5": "bash scripts/verify-phase5.sh",
     "demo:prep": "bash scripts/demo-prep.sh",
+    "rehearsal:verify": "bash scripts/rehearsal-verify.sh",
     "verify:phase6": "bash scripts/verify-phase6.sh",
     "publish:github": "bash scripts/publish-github.sh",
     "pr:phase6": "bash scripts/open-phase6-pr.sh",

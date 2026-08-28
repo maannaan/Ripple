@@ -59,6 +59,26 @@ npm run verify:phase6          # full pre-submit gate (includes Docker integrati
 
 Per-phase gates: `verify:phase0`, `verify:phase3`, `verify:phase5`
 
+## Why TrueForge
+
+Ripple is not a thin LLM wrapper. TrueForge runs the full agent loop:
+
+```mermaid
+flowchart LR
+  User --> TrueForge
+  TrueForge --> MCP[MCP ripple-data]
+  TrueForge --> Sandbox[sandbox simulate_change]
+  MCP --> Postgres[(Postgres)]
+  TrueForge -->|approval gate| MCP
+```
+
+| Harness feature | How Ripple uses it |
+|-----------------|-------------------|
+| **MCP tools** | Live queries + audited writes to Postgres |
+| **Sandbox** | `simulate_change.py` — revenue/counts are code, not guesses |
+| **Approval gate** | `apply_product_update` blocked until user clicks Allow |
+| **Skills** | `ripple-simulation` skill from public GitHub |
+
 ## Repository layout
 
 | Path | Purpose |
@@ -69,6 +89,16 @@ Per-phase gates: `verify:phase0`, `verify:phase3`, `verify:phase5`
 | `agent/` | TrueForge instructions + `ripple-simulation` skill |
 | `scripts/` | Setup, demo prep, verification |
 | `docs/DEMO.md` | Judge-ready demo script |
+| `docs/VIDEO.md` | Demo video shot list |
+| `docs/PORTAL_SUBMIT.md` | Hackathon portal submission |
+
+## Rehearsal
+
+```bash
+npm run rehearsal:verify   # automated MCP + simulation + DB checks
+```
+
+Manual chat (run **twice** before recording): see [docs/DEMO.md](docs/DEMO.md). Video checklist: [docs/VIDEO.md](docs/VIDEO.md).
 
 ## Phase roadmap
 
@@ -86,23 +116,22 @@ See [.env.example](.env.example). Copy to `.env` locally; never commit `.env`.
 
 ## Qodo Code Review Evidence
 
-_Substitute your merged PR URL after Qodo review. See [hackathon rules](https://www.wemakedevs.org/hackathons/trueforge/rules)._
+Per [hackathon rules](https://www.wemakedevs.org/hackathons/trueforge/rules). Install the [Qodo GitHub App](https://www.qodo.ai/) on this repo.
 
-- **Representative PR:** https://github.com/<org>/Ripple/pull/<N> _(update after merge)_
-- **Findings:** _(1–2 sentences: what Qodo flagged and what you fixed or dismissed)_
-- **Trail:** PR shows initial Qodo review, your responses, and follow-up review on final code.
-
-Install the [Qodo GitHub App](https://www.qodo.ai/) on this repo. Open substantive changes via PR; comment `/agentic_review` if review does not start automatically.
+- **Phase 6 PR:** https://github.com/maannaan/Ripple/pull/1 — initial submission merge
+- **Qodo review PR:** https://github.com/maannaan/Ripple/pull/2 _(submission docs + README for TrueForge judges — update findings after Qodo review)_
+- **Findings:** _(Update after PR #2 Qodo review: what was flagged and fixed/dismissed)_
+- **Trail:** PR #2 should show Qodo review, responses, and follow-up on final code. Comment `/agentic_review` if review does not start.
 
 ## Hackathon submission checklist
 
 - [x] README with setup and demo steps
-- [x] CI passing (`npm run ci` + GitHub Actions)
+- [x] CI passing (`npm run ci` + [GitHub Actions](https://github.com/maannaan/Ripple/actions))
 - [x] Working E2E demo (fetch → simulate → approve → execute)
-- [ ] Public GitHub repository — run `npm run publish:github` after `gh auth login`
-- [ ] Demo video (~3 minutes) — script in [docs/DEMO.md](docs/DEMO.md)
-- [ ] Qodo merged PR linked above
-- [ ] Submit on [WeMakeDevs portal](https://www.wemakedevs.org/hackathons/trueforge)
+- [x] Public GitHub repository — https://github.com/maannaan/Ripple
+- [ ] Demo video (~3 minutes) — [docs/VIDEO.md](docs/VIDEO.md) _(add URL here after upload)_
+- [ ] Qodo merged PR #2 linked with findings summary above
+- [ ] Submit on [WeMakeDevs portal](https://www.wemakedevs.org/hackathons/trueforge) — [docs/PORTAL_SUBMIT.md](docs/PORTAL_SUBMIT.md)
 - [ ] Blog post (optional prize track)
 
 ## License
