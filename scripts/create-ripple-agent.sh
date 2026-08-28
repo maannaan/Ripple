@@ -21,7 +21,7 @@ fi
 INSTRUCTIONS=$(python3 -c "import json; print(json.dumps(open('$INSTRUCTIONS_FILE').read()))")
 
 SKILLS_JSON="[]"
-if curl -sf "${BASE}/api/v1/settings/skills" | grep -q '"name": "ripple-simulation"'; then
+if curl -sf "${BASE}/api/v1/settings/skills" | grep -q 'ripple-simulation'; then
   SKILLS_JSON='[{"name": "ripple-simulation"}]'
 fi
 
