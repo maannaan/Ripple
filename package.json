@@ -29,6 +29,7 @@
     "publish:github": "bash scripts/publish-github.sh",
     "pr:phase6": "bash scripts/open-phase6-pr.sh",
     "submission:checklist": "bash scripts/submission-checklist.sh",
+    "handoff": "cat docs/HANDOFF.md",
     "ripple:setup": "npm run db:setup && npm run mcp:register && npm run agent:create",
     "ci": "npm run build --workspace=mcp-server && npm run simulation:test"
   },
