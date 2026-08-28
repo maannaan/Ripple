@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+*.sqlite
+.DS_Store
+mcp-server/dist/
+*.db
+data/
+__pycache__/
+*.pyc

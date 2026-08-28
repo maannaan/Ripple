@@ -1,0 +1,27 @@
+{
+  "old_sku": "ACME-1847",
+  "new_sku": "ACME-2847",
+  "product": {
+    "product_id": 1,
+    "sku": "ACME-1847",
+    "name": "Widget A",
+    "supplier": "SupplierX",
+    "status": "active"
+  },
+  "purchase_orders": [
+    { "po_id": 101, "supplier": "SupplierX", "product_id": 1, "quantity": 50, "status": "pending" },
+    { "po_id": 102, "supplier": "SupplierX", "product_id": 1, "quantity": 100, "status": "confirmed" }
+  ],
+  "shipments": [
+    { "shipment_id": 5001, "po_id": 101, "product_id": 1, "quantity": 50, "status": "delivered" },
+    { "shipment_id": 5002, "po_id": 102, "product_id": 1, "quantity": 30, "status": "transit" }
+  ],
+  "customer_orders": [
+    { "order_id": 9001, "product_id": 1, "quantity": 10, "status": "processing", "region": "East" },
+    { "order_id": 9002, "product_id": 1, "quantity": 15, "status": "pending", "region": "West" }
+  ],
+  "pricing_rules": [
+    { "rule_id": 1, "product_id": 1, "price": 850.0, "region": "East" },
+    { "rule_id": 2, "product_id": 1, "price": 890.0, "region": "West" }
+  ]
+}

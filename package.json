@@ -1,0 +1,30 @@
+{
+  "name": "ripple",
+  "private": true,
+  "scripts": {
+    "trueforge": "bash scripts/start-trueforge.sh",
+    "check": "bash scripts/check-env.sh",
+    "verify:phase0": "bash scripts/verify-phase0.sh",
+    "configure:anthropic": "bash scripts/configure-anthropic.sh",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d postgres",
+    "db:setup": "bash scripts/setup-db.sh",
+    "db:migrate": "bash scripts/migrate-db.sh",
+    "mcp:dev": "npm run dev --workspace=mcp-server",
+    "mcp:register": "bash scripts/register-mcp.sh",
+    "agent:create": "bash scripts/create-ripple-agent.sh",
+    "agent:create:fireworks": "RIPPLE_MODEL=fireworks/minimax-m3 bash scripts/create-ripple-agent.sh",
+    "agent:update": "bash scripts/update-ripple-agent.sh",
+    "skill:register": "bash scripts/register-simulation-skill.sh",
+    "skill:sync": "bash scripts/sync-simulation-skill.sh",
+    "simulation:test": "python3 simulation/tests/run_tests.py",
+    "simulation:run": "python3 simulation/simulate_change.py --fixture scenario_a",
+    "verify:phase3": "bash scripts/verify-phase3.sh",
+    "test:apply": "bash scripts/test-apply-update.sh",
+    "verify:phase5": "bash scripts/verify-phase5.sh",
+    "ripple:setup": "npm run db:setup && npm run mcp:register && npm run agent:create",
+    "ci": "npm run build --workspace=mcp-server"
+  },
+  "workspaces": ["mcp-server"]
+}
