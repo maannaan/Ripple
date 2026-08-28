@@ -63,10 +63,10 @@ fi
 info "6.6" "Manual: npm run demo:prep, live E2E chat, record ~3 min video (docs/DEMO.md)"
 
 # G6.7 Qodo PR
-if grep -q 'github.com/.*/pull/' README.md 2>/dev/null; then
+if grep -qE 'github\.com/[^/]+/[^/]+/pull/[0-9]+' README.md 2>/dev/null; then
   pass "6.7" "README links to a GitHub pull request"
 else
-  info "6.7" "Add merged Qodo-reviewed PR link under Qodo Code Review Evidence"
+  info "6.7" "Update Qodo section with merged PR URL (not placeholder)"
 fi
 
 echo "=== Summary ==="
