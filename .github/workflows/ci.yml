@@ -19,3 +19,58 @@ jobs:
       - run: npm ci
 
       - run: npm run build --workspace=mcp-server
+
+  simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: python3 simulation/tests/run_tests.py
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ripple
+          POSTGRES_PASSWORD: ripple
+          POSTGRES_DB: ripple
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U ripple -d ripple"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Load schema and seed
+        env:
+          PGPASSWORD: ripple
+        run: |
+          for i in $(seq 1 30); do
+            if pg_isready -h localhost -p 5433 -U ripple -d ripple; then
+              break
+            fi
+            sleep 1
+          done
+          psql -h localhost -p 5433 -U ripple -d ripple -v ON_ERROR_STOP=1 -f db/schema.sql
+          psql -h localhost -p 5433 -U ripple -d ripple -v ON_ERROR_STOP=1 -f db/seed.sql
+
+      - name: Apply integration test
+        env:
+          DATABASE_URL: postgres://ripple:ripple@localhost:5433/ripple
+        run: bash scripts/ci-integration.sh
