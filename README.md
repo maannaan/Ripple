@@ -99,7 +99,7 @@ Install the [Qodo GitHub App](https://www.qodo.ai/) on this repo. Open substanti
 - [x] README with setup and demo steps
 - [x] CI passing (`npm run ci` + GitHub Actions)
 - [x] Working E2E demo (fetch → simulate → approve → execute)
-- [ ] Public GitHub repository _(push + confirm URL)_
+- [ ] Public GitHub repository — run `npm run publish:github` after `gh auth login`
 - [ ] Demo video (~3 minutes) — script in [docs/DEMO.md](docs/DEMO.md)
 - [ ] Qodo merged PR linked above
 - [ ] Submit on [WeMakeDevs portal](https://www.wemakedevs.org/hackathons/trueforge)
