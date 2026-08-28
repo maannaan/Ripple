@@ -2,7 +2,15 @@
 
 Manual tasks after Phase 6 implementation.
 
-## 1. Qodo setup
+## 1. Publish to GitHub
+
+```bash
+gh auth login
+npm run publish:github    # creates public repo + pushes main and phase-6-submission
+npm run pr:phase6       # open PR for Qodo review
+```
+
+## 2. Qodo setup
 
 1. Install [Qodo GitHub App](https://www.qodo.ai/) on the public Ripple repo
 2. Open PR from `phase-6-submission` → `main`
