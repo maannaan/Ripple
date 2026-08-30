@@ -20,6 +20,8 @@ jobs:
 
       - run: npm run build --workspace=mcp-server
 
+      - run: npm run test:mcp
+
   simulation:
     runs-on: ubuntu-latest
     steps:

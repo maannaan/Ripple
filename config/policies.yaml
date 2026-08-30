@@ -1,0 +1,9 @@
+auto_apply:
+  - product_sku
+  - in_transit_shipments
+
+always_manual:
+  - customer_orders
+
+max_revenue_exposure_without_vp: 50000
+blocked_regions: []

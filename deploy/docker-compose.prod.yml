@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ripple-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ripple}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-ripple}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - ripple_pg_data:/var/lib/postgresql/data
+      - ../db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ../db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ripple} -d ${POSTGRES_DB:-ripple}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mcp:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: ripple-mcp-prod
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-ripple}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ripple}
+      MCP_SERVER_PORT: 3100
+      RIPPLE_DATA_SOURCE: ${RIPPLE_DATA_SOURCE:-postgres}
+      RIPPLE_READ_ONLY: ${RIPPLE_READ_ONLY:-false}
+      MCP_API_KEYS: ${MCP_API_KEYS:-}
+      MCP_RATE_LIMIT: ${MCP_RATE_LIMIT:-120}
+      AUDIT_EXPORT_WEBHOOK_URL: ${AUDIT_EXPORT_WEBHOOK_URL:-}
+      OTEL_ENABLED: ${OTEL_ENABLED:-false}
+      RIPPLE_CONFIG: /app/config/ripple.config.yaml
+    ports:
+      - "${MCP_SERVER_PORT:-3100}:3100"
+    volumes:
+      - ../config:/app/config:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  ripple_pg_data:

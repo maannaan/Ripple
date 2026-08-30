@@ -4,16 +4,18 @@
   "private": true,
   "type": "module",
   "main": "dist/index.js",
-  "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.3",
     "pg": "^8.16.3",
     "zod": "^3.25.76",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "yaml": "^2.8.1"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "node --import tsx --test src/services/policy-engine.test.ts src/adapters/netsuite/netsuite-adapter.test.ts"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

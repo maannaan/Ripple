@@ -1,0 +1,14 @@
+{
+  "name": "scenario_a_impact",
+  "prompt": "What is the impact of changing SKU ACME-1847 to ACME-2847?",
+  "expected_tools": [
+    "get_product",
+    "find_purchase_orders",
+    "find_shipments",
+    "find_customer_orders",
+    "find_pricing_rules"
+  ],
+  "must_simulate": true,
+  "forbidden_patterns": ["21850", "21,850"],
+  "report_must_include": ["revenue", "9001", "9002", "5002"]
+}

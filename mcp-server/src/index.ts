@@ -1,7 +1,11 @@
 import { createRippleMcpApp } from "./mcp-app.js";
-import { closePool } from "./db.js";
+import { closePool } from "./db/pool.js";
+import { initTelemetry } from "./observability/telemetry.js";
 
 const PORT = Number(process.env.MCP_SERVER_PORT ?? 3100);
+
+await initTelemetry();
+
 const app = createRippleMcpApp();
 
 const server = app.listen(PORT, () => {

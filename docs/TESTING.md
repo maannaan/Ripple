@@ -10,6 +10,8 @@ Ripple has **three layers** of verification: simulation unit tests, automated lo
 | `npm run benchmark:simulation` | Simulation micro-benchmarks | No | No |
 | `npm run test:apply` | DB apply integration | No | Yes |
 | `npm run e2e:pipeline` | Full logic path (read → sim → apply) | No | Yes |
+| `npm run test:mcp` | Adapter + policy unit tests | No | No |
+| `npm run eval:agent` | Agent instruction contract checks | No | No |
 | `npm run verify:phase4` | Phase 4 manifest + orchestration instructions | Optional | No |
 | `npm run rehearsal:verify` | Pre-flight (sim + MCP + DB) | Optional check | Yes |
 | `docs/DEMO.md` chat | Judge demo (LLM + approval gate) | **Yes** | Yes |
@@ -53,7 +55,9 @@ See [docs/BENCHMARKS.md](BENCHMARKS.md) for `npm run benchmark:simulation`.
 ## Full verification stack
 
 ```bash
-npm run ci                 # build + simulation tests
+npm run ci                 # build + MCP tests + simulation + evals
+npm run test:mcp           # policy + NetSuite contract tests
+npm run eval:agent         # agent instruction harness
 npm run verify:phase4      # Phase 4 orchestration + manifest checks
 npm run e2e:pipeline       # logic E2E with Docker
 npm run rehearsal:verify   # requires mcp:dev + DB

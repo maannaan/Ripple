@@ -1,0 +1,26 @@
+{
+  "title": "Ripple MCP",
+  "panels": [
+    {
+      "title": "MCP tool calls",
+      "type": "stat",
+      "targets": [{ "expr": "ripple_mcp_tool_calls_total" }]
+    },
+    {
+      "title": "Apply success",
+      "type": "stat",
+      "targets": [{ "expr": "ripple_apply_success_total" }]
+    },
+    {
+      "title": "Tool duration p95",
+      "type": "graph",
+      "targets": [{ "expr": "ripple_mcp_tool_duration_ms" }]
+    },
+    {
+      "title": "ERP error rate",
+      "type": "graph",
+      "targets": [{ "expr": "ripple_erp_error_rate" }]
+    }
+  ],
+  "description": "Import /metrics JSON from Ripple MCP or wire Prometheus exporter in production."
+}

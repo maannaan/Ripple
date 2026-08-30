@@ -35,8 +35,11 @@
     "submission:checklist": "bash scripts/submission-checklist.sh",
     "handoff": "cat docs/HANDOFF.md",
     "fix:sandbox-git": "bash scripts/fix-sandbox-git.sh",
+    "eval:agent": "node evals/run-evals.mjs",
+    "test:mcp": "npm run test --workspace=mcp-server",
+    "deploy:prod": "docker compose -f deploy/docker-compose.prod.yml up -d --build",
     "ripple:setup": "npm run db:setup && npm run mcp:register && npm run agent:create",
-    "ci": "npm run build --workspace=mcp-server && npm run simulation:test"
+    "ci": "npm run build --workspace=mcp-server && npm run test:mcp && npm run simulation:test && npm run eval:agent"
   },
   "workspaces": ["mcp-server"]
 }

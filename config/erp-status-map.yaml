@@ -1,0 +1,9 @@
+# Map ERP status labels → Ripple canonical statuses for simulation
+
+"Pending Fulfillment": pending
+"In Transit": transit
+Shipped: delivered
+Processing: processing
+Pending: pending
+Backorder: backorder
+Confirmed: confirmed

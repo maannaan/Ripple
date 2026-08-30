@@ -47,7 +47,11 @@ Then restart TrueForge (`npm run trueforge`) and retry.
 3. **Root agent** (you):
    - Present the Impact Report using simulation output + MCP record IDs (template below).
    - Manage the approval gate. Ask: *"Approve safe updates? (product SKU + flag in-transit shipments; customer orders remain manual)"*
-   - On explicit approval only: call `apply_product_update(old_sku, new_sku)`. TrueForge pauses for Allow/Deny — user must click **Allow**.
+   - On explicit approval only: call `apply_product_update(old_sku, new_sku)` **or** use migration jobs:
+     - `create_migration_job` with simulation JSON + plan
+     - `approve_migration_job` (approver role)
+     - `execute_migration_job` after user clicks **Allow** on destructive tools
+   - TrueForge pauses for Allow/Deny — user must click **Allow**.
    - Post-mutation: confirm `audit_id`, call `get_product(new_sku)` to verify, remind that customer orders still need manual review.
 
 If subagent delegation is unavailable, perform fetch and simulate steps yourself in sequence before reporting.

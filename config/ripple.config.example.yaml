@@ -1,0 +1,26 @@
+# Ripple self-hosted configuration (copy to ripple.config.yaml)
+
+dataSource: postgres  # postgres | netsuite
+readOnly: false
+
+postgres:
+  connectionString: ${DATABASE_URL}
+
+# NetSuite (uncomment when using ERP connector)
+# netsuite:
+#   accountId: "1234567"
+#   roleId: "3"
+#   baseUrl: "https://1234567.suitetalk.api.netsuite.com"
+#   fixtureDir: ""  # set for CI replay; leave empty for live API
+#   credentialsSecret: vault://ripple/netsuite
+
+statusMapping: ./config/erp-status-map.yaml
+policies: ./config/policies.yaml
+
+oidc:
+  issuer: https://your-idp.example.com
+  audience: ripple-mcp
+  jwksUri: https://your-idp.example.com/.well-known/jwks.json
+
+auditExport:
+  webhookUrl: https://siem.example.com/ripple/audit

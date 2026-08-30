@@ -2,9 +2,9 @@
 
 **Simulate SKU change impact before you touch production data.**
 
-Ripple is an open-source agent for supply chain and operations teams. When you need to rename a product SKU, Ripple reads your real database, runs deterministic impact math in a sandbox, shows you what breaks, and **only applies safe changes after you click Allow**.
+Ripple is an open-source agent for supply chain and operations teams. When you need to rename a product SKU, Ripple reads your real database (or ERP via adapters), runs deterministic impact math in a sandbox, shows you what breaks, and **only applies safe changes after you click Allow**.
 
-Built on [TrueForge](https://trueforge.dev) for the [Agent Harness Hackathon](https://www.wemakedevs.org/hackathons/trueforge).
+Built on [TrueForge](https://trueforge.dev) for the [Agent Harness Hackathon](https://www.wemakedevs.org/hackathons/trueforge). Includes a **self-hosted production foundation**: secured MCP, ERP adapters, migration jobs, and Docker deploy — see [Demo vs self-hosted production](#demo-vs-self-hosted-production).
 
 ---
 
@@ -24,6 +24,7 @@ Built on [TrueForge](https://trueforge.dev) for the [Agent Harness Hackathon](ht
 - [Testing](#testing)
 - [Troubleshooting](#troubleshooting)
 - [Documentation map](#documentation-map)
+- [Demo vs self-hosted production](#demo-vs-self-hosted-production)
 - [License](#license)
 
 ---
@@ -126,7 +127,7 @@ flowchart LR
 | Component | Folder | Role |
 |-----------|--------|------|
 | **TrueForge** | via `npx` | Agent UI, sandbox, approval gate, subagents |
-| **MCP server** | `mcp-server/` | HTTP API the agent calls to read/write Postgres |
+| **MCP server** | `mcp-server/` | HTTP API the agent calls to read/write Postgres or ERP adapters |
 | **Simulation** | `simulation/` | Standalone Python impact calculator |
 | **Database** | `db/` | Schema, seed data, Docker Compose |
 | **Agent config** | `agent/` | Instructions + `ripple-simulation` skill files |
@@ -339,9 +340,13 @@ npm run simulation:test
 | `find_customer_orders` | Read | Customer orders for a product |
 | `find_pricing_rules` | Read | Regional pricing for a product |
 | `apply_product_update` | **Write** | Update SKU + flag in-transit shipments (needs **Allow**) |
+| `create_migration_job` | Write | Persist migration plan after policy check |
+| `approve_migration_job` | **Write** | Approve job (approver role; needs **Allow**) |
+| `execute_migration_job` | **Write** | Run approved job idempotently (needs **Allow**) |
+| `get_migration_job_status` | Read | Job status + step list |
 | `get_audit_log` | Read | Audit trail after apply |
 
-MCP details: [mcp-server/README.md](mcp-server/README.md)
+Production endpoints: `GET /health`, `GET /metrics`. Secure with `MCP_API_KEYS` — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
@@ -364,8 +369,12 @@ MCP details: [mcp-server/README.md](mcp-server/README.md)
 |---------|----------------|
 | `npm run rehearsal:verify` | Pre-flight: sim + MCP + DB + TrueForge |
 | `npm run demo:prep` | Reset demo after a test run |
-| `npm run ci` | Build MCP + run simulation tests |
+| `npm run ci` | Build MCP + unit tests + simulation + agent evals |
+| `npm run test:mcp` | Adapter + policy unit tests |
+| `npm run eval:agent` | Agent instruction contract checks |
 | `npm run e2e:pipeline` | Automated logic test (no UI) |
+| `npm run deploy:prod` | Docker production stack (`deploy/docker-compose.prod.yml`) |
+| `npm run db:migrate` | Apply SQL migrations (migration jobs, audit) |
 | `npm run fix:sandbox-git` | Diagnose git/skill sandbox issues on macOS |
 
 Full testing guide: [docs/TESTING.md](docs/TESTING.md)
@@ -375,7 +384,9 @@ Full testing guide: [docs/TESTING.md](docs/TESTING.md)
 ## Testing
 
 ```bash
-npm run ci                  # fast: build + simulation A/B/C
+npm run ci                  # build + MCP tests + simulation + evals
+npm run test:mcp            # adapter + policy unit tests
+npm run eval:agent          # agent instruction harness
 npm run e2e:pipeline        # full logic path with Docker
 npm run rehearsal:verify    # needs TrueForge + MCP running
 npm run verify:phase4       # subagent manifest checks
@@ -413,6 +424,56 @@ Benchmarks: [docs/BENCHMARKS.md](docs/BENCHMARKS.md)
 | [agent/README.md](agent/README.md) | Agent + skill setup |
 | [simulation/README.md](simulation/README.md) | Fixtures and golden numbers |
 | [docs/design/](docs/design/README.md) | Design notes |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Self-hosted production install |
+| [docs/CONNECTORS.md](docs/CONNECTORS.md) | ERP adapters (Postgres, NetSuite) |
+| [docs/RUNBOOK.md](docs/RUNBOOK.md) | Ops, incidents, rollback |
+
+---
+
+## Demo vs self-hosted production
+
+Ripple ships in two modes:
+
+| Mode | Status | Use when |
+|------|--------|----------|
+| **Hackathon demo** | Ready now | Judges, local clone, Scenario A (`ACME-1847` → `ACME-2847`) |
+| **Self-hosted production** | Foundation implemented | Your environment, ERP APIs, secured MCP, migration jobs |
+
+### Demo (ready)
+
+```bash
+npm run demo:prep && npm run trueforge   # + mcp:dev in another terminal
+```
+
+Golden numbers: revenue **21850**, POs **101/102**, orders **9001/9002**, shipment **5002**.
+
+### Self-hosted production (foundation)
+
+Production building blocks in this repo:
+
+- **Adapter layer** — `RippleDataSource` with Postgres + NetSuite (fixture replay)
+- **Secured MCP** — Bearer API keys, rate limits, structured logs (`MCP_API_KEYS`)
+- **Migration jobs** — `create_migration_job` → `approve_migration_job` → `execute_migration_job`
+- **Policy engine** — [`config/policies.yaml`](config/policies.yaml)
+- **Deploy** — [`deploy/docker-compose.prod.yml`](deploy/docker-compose.prod.yml)
+- **Ops** — health `/health`, metrics `/metrics`, [RUNBOOK](docs/RUNBOOK.md)
+
+```bash
+cp config/ripple.config.example.yaml config/ripple.config.yaml
+npm run deploy:prod   # requires POSTGRES_PASSWORD in .env
+```
+
+### Production-ready checklist
+
+| Criterion | Demo | Self-hosted v0 |
+|-----------|------|----------------|
+| Real ERP reads | Postgres seed only | NetSuite fixture + live REST skeleton |
+| Secured MCP | Open (local) | API keys + rate limits |
+| Migration jobs + audit | Single `apply_product_update` | Job tables + policy gate |
+| Human approval | TrueForge Allow | TrueForge Allow + approver role |
+| Ops runbook | — | [docs/RUNBOOK.md](docs/RUNBOOK.md) |
+
+Full ERP write path and SSO require customer-specific OAuth wiring — see [docs/CONNECTORS.md](docs/CONNECTORS.md).
 
 ---
 
