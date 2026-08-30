@@ -20,11 +20,11 @@ else
   fail "simulation expected 21850, got ${REV}"
 fi
 
-# 2. MCP health
+# 2. MCP health (warn if services not started yet)
 if curl -sf http://localhost:3100/health | grep -q ripple-mcp; then
   pass "MCP server healthy"
 else
-  fail "MCP not running — npm run mcp:dev"
+  echo "WARN: MCP not running — start npm run mcp:dev before full rehearsal"
 fi
 
 # 3. DB seed
@@ -37,9 +37,13 @@ else
 fi
 
 # 4. TrueForge (manual chat layer)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/skill-registered.sh
+source "${SCRIPT_DIR}/lib/skill-registered.sh"
+
 if curl -sf http://localhost:8790 >/dev/null 2>&1; then
   pass "TrueForge reachable"
-  if curl -sf http://localhost:8790/api/v1/settings/skills 2>/dev/null | grep -q ripple-simulation; then
+  if skill_registered "http://localhost:8790"; then
     pass "skill ripple-simulation registered"
   else
     echo "WARN: skill not registered — export RIPPLE_SKILL_GIT_URL=https://github.com/maannaan/Ripple && npm run skill:register"

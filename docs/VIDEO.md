@@ -6,13 +6,13 @@
 
 ```bash
 npm run demo:prep
-npm run rehearsal:verify
 npm run trueforge          # terminal 1
 npm run mcp:dev            # terminal 2
 npm run mcp:register       # once
 export RIPPLE_SKILL_GIT_URL=https://github.com/maannaan/Ripple
 npm run skill:register
 npm run agent:update
+npm run rehearsal:verify   # after MCP + TrueForge are running
 ```
 
 Run the **manual chat flow twice** successfully before recording.

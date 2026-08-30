@@ -118,10 +118,9 @@ See [.env.example](.env.example). Copy to `.env` locally; never commit `.env`.
 
 Per [hackathon rules](https://www.wemakedevs.org/hackathons/trueforge/rules). Install the [Qodo GitHub App](https://www.qodo.ai/) on this repo.
 
-- **Phase 6 PR:** https://github.com/maannaan/Ripple/pull/1 — initial submission merge
-- **Qodo review PR:** https://github.com/maannaan/Ripple/pull/2 _(submission docs + README for TrueForge judges — update findings after Qodo review)_
-- **Findings:** _(Update after PR #2 Qodo review: what was flagged and fixed/dismissed)_
-- **Trail:** PR #2 should show Qodo review, responses, and follow-up on final code. Comment `/agentic_review` if review does not start.
+- **Qodo review PR:** https://github.com/maannaan/Ripple/pull/2 — submission docs + judge README (Qodo-reviewed)
+- **Findings:** Qodo flagged (1) `rehearsal:verify` doc order before MCP — fixed by reordering VIDEO/SUBMISSION and softening MCP check to WARN; (2) skill grep false positives — fixed with exact JSON `name` match via `scripts/lib/skill-registered.sh`.
+- **Trail:** PR #2 shows Qodo review, fix commits, and follow-up `/agentic_review`.
 
 ## Hackathon submission checklist
 
@@ -130,7 +129,7 @@ Per [hackathon rules](https://www.wemakedevs.org/hackathons/trueforge/rules). In
 - [x] Working E2E demo (fetch → simulate → approve → execute)
 - [x] Public GitHub repository — https://github.com/maannaan/Ripple
 - [ ] Demo video (~3 minutes) — [docs/VIDEO.md](docs/VIDEO.md) _(add URL here after upload)_
-- [ ] Qodo merged PR #2 linked with findings summary above
+- [ ] Qodo merged PR #2 linked with findings summary above _(merge after follow-up review)_
 - [ ] Submit on [WeMakeDevs portal](https://www.wemakedevs.org/hackathons/trueforge) — [docs/PORTAL_SUBMIT.md](docs/PORTAL_SUBMIT.md)
 - [ ] Blog post (optional prize track)
 

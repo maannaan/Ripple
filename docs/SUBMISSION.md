@@ -4,7 +4,6 @@
 
 ```bash
 npm run demo:prep
-npm run rehearsal:verify
 npm run ci
 ```
 
@@ -17,6 +16,7 @@ npm run mcp:register
 export RIPPLE_SKILL_GIT_URL=https://github.com/maannaan/Ripple
 npm run skill:register
 npm run agent:update
+npm run rehearsal:verify       # after MCP is up
 ```
 
 ## 3. Qodo review

@@ -20,8 +20,12 @@ fi
 
 INSTRUCTIONS=$(python3 -c "import json; print(json.dumps(open('$INSTRUCTIONS_FILE').read()))")
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/skill-registered.sh
+source "${SCRIPT_DIR}/lib/skill-registered.sh"
+
 SKILLS_JSON="[]"
-if curl -sf "${BASE}/api/v1/settings/skills" | grep -q 'ripple-simulation'; then
+if skill_registered "${BASE}"; then
   SKILLS_JSON='[{"name": "ripple-simulation"}]'
 fi
 
