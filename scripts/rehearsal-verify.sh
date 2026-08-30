@@ -20,11 +20,11 @@ else
   fail "simulation expected 21850, got ${REV}"
 fi
 
-# 2. MCP health (warn if services not started yet)
+# 2. MCP health (required — runbooks start mcp:dev before this script)
 if curl -sf http://localhost:3100/health | grep -q ripple-mcp; then
   pass "MCP server healthy"
 else
-  echo "WARN: MCP not running — start npm run mcp:dev before full rehearsal"
+  fail "MCP not running — start npm run mcp:dev before rehearsal:verify"
 fi
 
 # 3. DB seed
