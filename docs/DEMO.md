@@ -29,7 +29,7 @@ npm run agent:update
 |------|------|----------------|
 | 0:00–0:30 | Problem | SKU change in supply chain affects POs, shipments, orders, pricing — need blast-radius before mutating data |
 | 0:30–1:00 | Stack | TrueForge UI, **ripple** agent, MCP `ripple-data` connector, Docker Postgres |
-| 1:00–1:45 | Analyze | Chat prompt below; show tool calls (`get_product`, `find_*`, sandbox `simulate_change.py`) |
+| 1:00–1:45 | Analyze | Chat prompt below; show tool calls and optional **subagent threads** (`get_product`, `find_*`, sandbox `simulate_change.py`) |
 | 1:45–2:15 | Report | Revenue **21850**, POs **101/102**, orders **9001/9002** manual, shipment **5002** in transit |
 | 2:15–2:45 | Approve | *"Approve safe updates"* → TrueForge pauses → click **Allow** on `apply_product_update` |
 | 2:45–3:00 | Verify | Agent confirms `audit_id`; optional SQL below |
@@ -81,7 +81,7 @@ Expected: `ACME-2847`, shipment **5002** `needs_remapping = t`.
 |-------|-----|
 | DB already mutated | `npm run demo:prep` |
 | Gemini credits error | Use Fireworks: `npm run agent:update` (default model `fireworks/minimax-m3`) |
-| Sandbox / skill missing | `npm run skill:register` after public GitHub push |
+| Sandbox / skill missing | `npm run skill:register` after public GitHub push; if git skill init fails in sandbox, agent uses curl fallback (see `agent/instructions.md`); or run `sudo xcode-select --switch /Library/Developer/CommandLineTools` and restart TrueForge |
 | MCP errors | `npm run mcp:dev` + `curl http://localhost:3100/health` |
 | Wrong revenue / IDs | Agent skipped sandbox — check skill registered and sandbox enabled |
 

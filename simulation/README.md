@@ -15,6 +15,21 @@ npm run simulation:test
 npm run simulation:run
 ```
 
+## Scenarios
+
+| Fixture | SKU change | Revenue | In-transit to flag | Notes |
+|---------|------------|---------|-------------------|-------|
+| `scenario_a` | ACME-1847 → ACME-2847 | **21850** | **5002** | Demo / hackathon golden path |
+| `scenario_b` | BETA-9001 → BETA-9002 | **7500** | none | Second product; delivered shipment only |
+| `scenario_c` | ACME-1847 → ACME-2847 | **0** | **5002** | Edge: customer orders closed (no open revenue) |
+
+Golden expectations live in `simulation/fixtures/expectations.json`. Run any fixture:
+
+```bash
+python3 simulation/simulate_change.py --fixture scenario_b
+python3 simulation/simulate_change.py --fixture scenario_c
+```
+
 ## Input schema
 
 | Field | Description |

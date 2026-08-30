@@ -1,0 +1,23 @@
+{
+  "old_sku": "BETA-9001",
+  "new_sku": "BETA-9002",
+  "product": {
+    "product_id": 2,
+    "sku": "BETA-9001",
+    "name": "Widget B",
+    "supplier": "SupplierY",
+    "status": "active"
+  },
+  "purchase_orders": [
+    { "po_id": 103, "supplier": "SupplierY", "product_id": 2, "quantity": 20, "status": "pending" }
+  ],
+  "shipments": [
+    { "shipment_id": 5003, "po_id": 103, "product_id": 2, "quantity": 20, "status": "delivered" }
+  ],
+  "customer_orders": [
+    { "order_id": 9003, "product_id": 2, "quantity": 5, "status": "processing", "region": "East" }
+  ],
+  "pricing_rules": [
+    { "rule_id": 3, "product_id": 2, "price": 1500.0, "region": "East" }
+  ]
+}

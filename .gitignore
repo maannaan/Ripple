@@ -8,3 +8,5 @@ mcp-server/dist/
 data/
 __pycache__/
 *.pyc
+video/node_modules/
+video/out/

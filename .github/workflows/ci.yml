@@ -70,7 +70,9 @@ jobs:
           psql -h localhost -p 5433 -U ripple -d ripple -v ON_ERROR_STOP=1 -f db/schema.sql
           psql -h localhost -p 5433 -U ripple -d ripple -v ON_ERROR_STOP=1 -f db/seed.sql
 
-      - name: Apply integration test
+      - name: E2E pipeline (logic path)
         env:
           DATABASE_URL: postgres://ripple:ripple@localhost:5433/ripple
-        run: bash scripts/ci-integration.sh
+        run: |
+          npm run build --workspace=mcp-server
+          node scripts/e2e-pipeline.mjs

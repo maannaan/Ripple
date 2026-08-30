@@ -34,6 +34,13 @@ else
   fail "6.3" "test:apply failed"
 fi
 
+# G6.3b logic pipeline (read → simulate → apply)
+if bash scripts/e2e-pipeline.sh; then
+  pass "6.3b" "e2e:pipeline"
+else
+  info "6.3b" "e2e:pipeline failed — ensure Docker is running"
+fi
+
 # G6.4 required files
 REQUIRED=(LICENSE docs/DEMO.md README.md)
 for p in "$REQUIRED"; do

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Create Ripple agent in TrueForge (default: Fireworks + sandbox + simulation skill).
+# Create Ripple agent in TrueForge (Fireworks + sandbox + subagents + simulation skill).
 set -euo pipefail
 
 TRUEFORGE_PORT="${TRUEFORGE_PORT:-8790}"
@@ -7,6 +7,10 @@ BASE="http://localhost:${TRUEFORGE_PORT}"
 AGENT_NAME="${RIPPLE_AGENT_NAME:-ripple}"
 MODEL="${RIPPLE_MODEL:-fireworks/minimax-m3}"
 INSTRUCTIONS_FILE="$(cd "$(dirname "$0")/.." && pwd)/agent/instructions.md"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/agent-manifest.sh
+source "${SCRIPT_DIR}/lib/agent-manifest.sh"
 
 if ! curl -sf "${BASE}" >/dev/null 2>&1; then
   echo "TrueForge not running at ${BASE}"
@@ -18,16 +22,7 @@ if [[ ! -f "$INSTRUCTIONS_FILE" ]]; then
   exit 1
 fi
 
-INSTRUCTIONS=$(python3 -c "import json; print(json.dumps(open('$INSTRUCTIONS_FILE').read()))")
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/skill-registered.sh
-source "${SCRIPT_DIR}/lib/skill-registered.sh"
-
-SKILLS_JSON="[]"
-if skill_registered "${BASE}"; then
-  SKILLS_JSON='[{"name": "ripple-simulation"}]'
-fi
+SKILLS_JSON="$(ripple_skills_json "${BASE}")"
 
 EXISTING="$(curl -sf "${BASE}/api/v1/agents" || echo '{}')"
 if echo "$EXISTING" | grep -q "\"name\": \"${AGENT_NAME}\""; then
@@ -35,27 +30,9 @@ if echo "$EXISTING" | grep -q "\"name\": \"${AGENT_NAME}\""; then
   exit 0
 fi
 
-BODY=$(cat <<EOF
-{
-  "name": "${AGENT_NAME}",
-  "manifest": {
-    "model": { "name": "${MODEL}" },
-    "instructions": ${INSTRUCTIONS},
-    "mcp_servers": [
-      {
-        "name": "ripple-data",
-        "preload_tools": ["get_product"],
-        "require_approval_for_tools": ["apply_product_update", "@write", "@destructive"]
-      }
-    ],
-    "skills": ${SKILLS_JSON},
-    "config": {
-      "sandbox": { "enabled": true, "file_downloads": true }
-    }
-  }
-}
-EOF
-)
+MANIFEST="$(ripple_build_manifest "$INSTRUCTIONS_FILE" "$MODEL" "$SKILLS_JSON")"
+BODY=$(python3 -c "import json,sys; print(json.dumps({'name': sys.argv[1], 'manifest': json.loads(sys.argv[2])}))" \
+  "$AGENT_NAME" "$MANIFEST")
 
 HTTP_CODE=$(curl -s -o /tmp/ripple-agent-create.json -w "%{http_code}" \
   -X POST "${BASE}/api/v1/agents" \
@@ -63,7 +40,7 @@ HTTP_CODE=$(curl -s -o /tmp/ripple-agent-create.json -w "%{http_code}" \
   -d "$BODY")
 
 if [[ "$HTTP_CODE" == "201" ]]; then
-  echo "Created agent '${AGENT_NAME}' with model ${MODEL}, sandbox enabled"
+  echo "Created agent '${AGENT_NAME}' with model ${MODEL}, sandbox + dynamic subagents enabled"
   echo "Open ${BASE} -> Agents -> ${AGENT_NAME}"
   echo "Register skill first if needed: npm run skill:register"
   exit 0

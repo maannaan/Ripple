@@ -1,0 +1,38 @@
+{
+  "scenario_a": {
+    "revenue_exposure": 21850.0,
+    "counts": {
+      "purchase_orders": 2,
+      "shipments": 2,
+      "customer_orders": 2,
+      "pricing_rules": 2
+    },
+    "purchase_order_ids": [101, 102],
+    "in_transit_shipment_ids": [5002],
+    "safe_auto_updates_shipments": [5002]
+  },
+  "scenario_b": {
+    "revenue_exposure": 7500.0,
+    "counts": {
+      "purchase_orders": 1,
+      "shipments": 1,
+      "customer_orders": 1,
+      "pricing_rules": 1
+    },
+    "purchase_order_ids": [103],
+    "in_transit_shipment_ids": [],
+    "safe_auto_updates_shipments": []
+  },
+  "scenario_c": {
+    "revenue_exposure": 0.0,
+    "counts": {
+      "purchase_orders": 2,
+      "shipments": 2,
+      "customer_orders": 2,
+      "pricing_rules": 2
+    },
+    "purchase_order_ids": [101, 102],
+    "in_transit_shipment_ids": [5002],
+    "safe_auto_updates_shipments": [5002]
+  }
+}

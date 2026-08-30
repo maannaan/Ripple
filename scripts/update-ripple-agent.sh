@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Update existing Ripple agent (sandbox, skills, instructions, model).
+# Update existing Ripple agent (sandbox, subagents, skills, instructions, model).
 set -euo pipefail
 
 TRUEFORGE_PORT="${TRUEFORGE_PORT:-8790}"
 BASE="http://localhost:${TRUEFORGE_PORT}"
 AGENT_NAME="${RIPPLE_AGENT_NAME:-ripple}"
 MODEL="${RIPPLE_MODEL:-fireworks/minimax-m3}"
-INSTRUCTIONS_FILE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/agent/instructions.md"
+INSTRUCTIONS_FILE="$(cd "$(dirname "$0")/.." && pwd)/agent/instructions.md"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/agent-manifest.sh
+source "${SCRIPT_DIR}/lib/agent-manifest.sh"
 
 if ! curl -sf "${BASE}" >/dev/null 2>&1; then
   echo "TrueForge not running at ${BASE}"
@@ -34,40 +38,14 @@ if [[ -z "$AGENT_ID" ]]; then
   exit 1
 fi
 
-INSTRUCTIONS=$(python3 -c "import json; print(json.dumps(open('$INSTRUCTIONS_FILE').read()))")
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/skill-registered.sh
-source "${SCRIPT_DIR}/lib/skill-registered.sh"
-
-SKILLS_JSON="[]"
-if skill_registered "${BASE}"; then
-  SKILLS_JSON='[{"name": "ripple-simulation"}]'
-else
+SKILLS_JSON="$(ripple_skills_json "${BASE}")"
+if [[ "$SKILLS_JSON" == "[]" ]]; then
   echo "WARN: skill ripple-simulation not registered — updating agent without skills array"
   echo "      Register after push: npm run skill:register"
 fi
 
-BODY=$(cat <<EOF
-{
-  "manifest": {
-    "model": { "name": "${MODEL}" },
-    "instructions": ${INSTRUCTIONS},
-    "mcp_servers": [
-      {
-        "name": "ripple-data",
-        "preload_tools": ["get_product"],
-        "require_approval_for_tools": ["apply_product_update", "@write", "@destructive"]
-      }
-    ],
-    "skills": ${SKILLS_JSON},
-    "config": {
-      "sandbox": { "enabled": true, "file_downloads": true }
-    }
-  }
-}
-EOF
-)
+MANIFEST="$(ripple_build_manifest "$INSTRUCTIONS_FILE" "$MODEL" "$SKILLS_JSON")"
+BODY=$(python3 -c "import json,sys; print(json.dumps({'manifest': json.loads(sys.argv[1])}))" "$MANIFEST")
 
 HTTP_CODE=$(curl -s -o /tmp/ripple-agent-update.json -w "%{http_code}" \
   -X PUT "${BASE}/api/v1/agents/${AGENT_ID}" \
@@ -75,7 +53,7 @@ HTTP_CODE=$(curl -s -o /tmp/ripple-agent-update.json -w "%{http_code}" \
   -d "$BODY")
 
 if [[ "$HTTP_CODE" == "200" ]]; then
-  echo "Updated agent '${AGENT_NAME}' (id ${AGENT_ID}) model=${MODEL} sandbox=enabled skill=ripple-simulation"
+  echo "Updated agent '${AGENT_NAME}' (id ${AGENT_ID}) model=${MODEL} sandbox=enabled subagents=enabled skill=ripple-simulation"
   exit 0
 fi
 

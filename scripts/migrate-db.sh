@@ -11,7 +11,8 @@ MIGRATIONS_DIR="${ROOT}/db/migrations"
 
 echo "Waiting for Postgres..."
 for i in $(seq 1 30); do
-  if docker compose exec -T postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1; then
+  if docker compose exec -T postgres pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" >/dev/null 2>&1 && \
+     docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT 1" >/dev/null 2>&1; then
     break
   fi
   if [[ "$i" -eq 30 ]]; then
@@ -31,7 +32,16 @@ for migration in "$MIGRATIONS_DIR"/*.sql; do
     continue
   fi
   echo "Applying $(basename "$migration")..."
-  docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 < "$migration"
+  for attempt in $(seq 1 10); do
+    if docker compose exec -T postgres psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 < "$migration"; then
+      break
+    fi
+    if [[ "$attempt" -eq 10 ]]; then
+      echo "FAIL: migration $(basename "$migration") after 10 attempts"
+      exit 1
+    fi
+    sleep 1
+  done
 done
 
 echo "PASS: migrations applied."
