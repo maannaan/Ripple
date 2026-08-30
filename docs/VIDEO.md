@@ -1,5 +1,8 @@
 # Demo video checklist (~3 minutes)
 
+**Full teleprompter script (simple language):** [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md)  
+**Animated product launch (YC style, Remotion prompt):** [VIDEO_PRODUCT_LAUNCH.md](VIDEO_PRODUCT_LAUNCH.md)
+
 **Target track:** Best Use of TrueForge
 
 ## Before recording
