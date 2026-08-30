@@ -1,45 +1,35 @@
 # Hackathon submission steps
 
-Manual tasks after Phase 6 implementation.
-
-## 1. Publish to GitHub
+## 1. Pre-demo checks
 
 ```bash
-gh auth login
-npm run publish:github    # creates public repo + pushes main and phase-6-submission
-npm run pr:phase6       # open PR for Qodo review
+npm run demo:prep
+npm run ci
 ```
 
-## 2. Qodo setup
-
-1. Install [Qodo GitHub App](https://www.qodo.ai/) on the public Ripple repo
-2. Open PR from `phase-6-submission` → `main`
-3. Wait for Qodo review (or comment `/agentic_review`)
-4. Fix High-severity findings; dismiss others with reason in thread
-5. Merge PR after Qodo follow-up review
-
-## 2. Update README
-
-Replace placeholders in **Qodo Code Review Evidence** with:
-
-- Merged PR URL
-- 1–2 sentences on findings and fixes
-
-## 3. Demo video (~3 min)
-
-Follow [DEMO.md](DEMO.md). Record screen + optional voiceover.
-
-## 4. Submit
-
-1. [Agent Harness Hackathon](https://www.wemakedevs.org/hackathons/trueforge)
-2. Public repo URL
-3. Demo video link
-4. Optional: DEV.to blog post
-
-## 5. Skill registration (local)
+## 2. TrueForge + skill
 
 ```bash
-export RIPPLE_SKILL_GIT_URL=https://github.com/<you>/Ripple
+npm run trueforge              # terminal 1
+npm run mcp:dev                # terminal 2
+npm run mcp:register
+export RIPPLE_SKILL_GIT_URL=https://github.com/maannaan/Ripple
 npm run skill:register
 npm run agent:update
+npm run rehearsal:verify       # after MCP is up
 ```
+
+## 3. Qodo review
+
+1. Install [Qodo GitHub App](https://www.qodo.ai/) on `maannaan/Ripple`
+2. Merge PR with submission docs (Qodo review on PR)
+3. Fix High findings; dismiss others with reason
+4. Update README **Qodo Code Review Evidence** with findings
+
+## 4. Demo video
+
+Follow [VIDEO.md](VIDEO.md) and [DEMO.md](DEMO.md). Run manual chat **twice** before recording.
+
+## 5. Portal submit
+
+See [PORTAL_SUBMIT.md](PORTAL_SUBMIT.md) — https://www.wemakedevs.org/hackathons/trueforge
